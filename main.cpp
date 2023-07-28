@@ -1,4 +1,5 @@
 #include <array>
+#include <cassert>
 #include <cstddef>
 #include <format>
 #include <iostream>
@@ -81,6 +82,7 @@ struct MDArray : std::array<T, (dims * ...)> {
   static constexpr size_t toIdx(const Indices... indices) noexcept
     requires((sizeof...(dims) == sizeof...(Indices)) && (std::is_same_v<size_t, Indices> && ...))
   {
+    (assert(indices < dims), ...);
     return MDArrayDetail::DimHelper<dims...>::toIdx(indices...).index;
   }
 };
