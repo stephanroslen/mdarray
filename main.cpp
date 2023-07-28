@@ -87,11 +87,18 @@ struct MDArray : std::array<T, (dims * ...)> {
   }
 };
 
+template<size_t... dims>
+constexpr auto genIntArray() noexcept {
+  MDArray<int, dims...> arr;
+
+  std::iota(std::begin(arr), std::end(arr), 0);
+
+  return arr;
+}
+
 int main() {
   {
-    MDArray<int, 3, 3, 3> arr3d;
-
-    std::iota(std::begin(arr3d), std::end(arr3d), 0);
+    constexpr auto arr3d{genIntArray<3, 3, 3>()};
 
     for (const auto iz : {0uz, 1uz, 2uz}) {
       for (const auto iy : {0uz, 1uz, 2uz}) {
@@ -105,9 +112,7 @@ int main() {
   }
 
   {
-    MDArray<int, 7, 3> arr2d;
-
-    std::iota(std::begin(arr2d), std::end(arr2d), 0);
+    constexpr auto arr2d{genIntArray<7, 3>()};
 
     for (const auto iy : {0uz, 1uz, 2uz}) {
       for (const auto ix : {0uz, 1uz, 2uz, 3uz, 4uz, 5uz, 6uz}) {
@@ -119,9 +124,7 @@ int main() {
   }
 
   {
-    MDArray<int, 4> arr1d;
-
-    std::iota(std::begin(arr1d), std::end(arr1d), 0);
+    constexpr auto arr1d{genIntArray<4>()};
 
     for (const auto ix : {0uz, 1uz, 2uz, 3uz}) {
       std::cout << std::format("{:3}", arr1d[ix]);
