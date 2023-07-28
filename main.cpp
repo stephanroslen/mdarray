@@ -46,7 +46,7 @@ struct MDArray : std::array<T, (dims * ...)> {
   using Base::operator[];
 
   template<typename... Indices>
-  auto& at(const Indices... indices) noexcept
+  constexpr auto& at(const Indices... indices) noexcept
     requires((sizeof...(dims) > 1) && (sizeof...(dims) == sizeof...(Indices))
              && (std::is_same_v<size_t, Indices> && ...))
   {
@@ -54,7 +54,7 @@ struct MDArray : std::array<T, (dims * ...)> {
   }
 
   template<typename... Indices>
-  const auto& at(const Indices... indices) const noexcept
+  constexpr const auto& at(const Indices... indices) const noexcept
     requires((sizeof...(dims) > 1) && (sizeof...(dims) == sizeof...(Indices))
              && (std::is_same_v<size_t, Indices> && ...))
   {
@@ -62,7 +62,7 @@ struct MDArray : std::array<T, (dims * ...)> {
   }
 
   template<typename... Indices>
-  auto& operator[](const Indices... indices) noexcept
+  constexpr auto& operator[](const Indices... indices) noexcept
     requires((sizeof...(dims) > 1) && (sizeof...(dims) == sizeof...(Indices))
              && (std::is_same_v<size_t, Indices> && ...))
   {
@@ -70,7 +70,7 @@ struct MDArray : std::array<T, (dims * ...)> {
   }
 
   template<typename... Indices>
-  const auto& operator[](const Indices... indices) const noexcept
+  constexpr const auto& operator[](const Indices... indices) const noexcept
     requires((sizeof...(dims) > 1) && (sizeof...(dims) == sizeof...(Indices))
              && (std::is_same_v<size_t, Indices> && ...))
   {
