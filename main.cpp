@@ -96,40 +96,57 @@ constexpr auto genIntArray() noexcept {
   return arr;
 }
 
+template<size_t... dims>
+void printIntArray(const MDArray<int, dims...>& arr) noexcept {
+  constexpr static size_t nDims{sizeof...(dims)};
+  using DimArr = std::array<size_t, nDims>;
+
+  constexpr static DimArr dimVals{dims...};
+  constexpr static DimArr zeroIter{[]() {
+    DimArr result;
+    std::fill(std::begin(result), std::end(result), size_t{0});
+    return result;
+  }()};
+
+  const auto incIter{[&](DimArr& iter) {
+    iter[0] += 1;
+    for (size_t i{0}; i < nDims - 1; ++i) {
+      if (iter[i] < dimVals[i]) {
+        break;
+      }
+      iter[i] = 0;
+      iter[i + 1] += 1;
+    }
+  }};
+
+  for (auto iter{zeroIter}; iter[nDims - 1] < dimVals[nDims - 1]; incIter(iter)) {
+    std::cout << std::format("{:3}", std::apply([&](auto... args) { return arr.at(args...); }, iter));
+    if (iter[0] == dimVals[0] - 1) {
+      std::cout << '\n';
+      if (nDims > 1 && iter[1] == dimVals[1] - 1) {
+        std::cout << '\n';
+      }
+    }
+  }
+}
+
 int main() {
   {
     constexpr auto arr3d{genIntArray<3, 3, 3>()};
 
-    for (const auto iz : {0uz, 1uz, 2uz}) {
-      for (const auto iy : {0uz, 1uz, 2uz}) {
-        for (const auto ix : {0uz, 1uz, 2uz}) {
-          std::cout << std::format("{:3}", arr3d[ix, iy, iz]);
-        }
-        std::cout << '\n';
-      }
-      std::cout << '\n';
-    }
+    printIntArray(arr3d);
   }
 
   {
     constexpr auto arr2d{genIntArray<7, 3>()};
 
-    for (const auto iy : {0uz, 1uz, 2uz}) {
-      for (const auto ix : {0uz, 1uz, 2uz, 3uz, 4uz, 5uz, 6uz}) {
-        std::cout << std::format("{:3}", arr2d[ix, iy]);
-      }
-      std::cout << '\n';
-    }
-    std::cout << '\n';
+    printIntArray(arr2d);
   }
 
   {
     constexpr auto arr1d{genIntArray<4>()};
 
-    for (const auto ix : {0uz, 1uz, 2uz, 3uz}) {
-      std::cout << std::format("{:3}", arr1d[ix]);
-    }
-    std::cout << '\n';
+    printIntArray(arr1d);
   }
 
   return 0;
